@@ -1,14 +1,8 @@
 <template>
-  <div>
-    <mavon-editor code-style="atom-one-dark" v-model="context" @save="save" @imgAdd="imgAdd" @imgDel="imgDel" />
+  <div class="article-edit">
+    <mavon-editor v-if="editor = 'markdown'" code-style="atom-one-dark" v-model="context" @save="save" @imgAdd="imgAdd" @imgDel="imgDel" />
 
-    <quill-editor v-model="content" :options="option" />
-
-    <div class="markdown-container" v-html="html" />
-
-    <div class="ql-snow ql-container">
-      <div class="ql-editor" v-html="content" />
-    </div>
+    <quill-editor v-else v-model="content" :options="option" />
   </div>
 </template>
 
@@ -22,15 +16,16 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
 export default {
-  name: 'HelloWorld',
+  name: 'ArticleEdit',
 
   components: {
     mavonEditor,
     quillEditor
   },
 
-  data () {
+  data () { 
     return {
+      editor: 'markdown',
       context: '',
       html: '',
       content: '',
@@ -38,10 +33,6 @@ export default {
         placeholder: '开始编辑...'
       }
     }
-  },
-
-  created () {
-    this.$http.get('blog', {params: { asd: '123' }})
   },
 
   methods: {
@@ -65,19 +56,7 @@ export default {
 }
 </script>
 
-<style scoped>
-.markdown-container {
-  width: 60%;
-  margin: 0 auto;
-  margin-top: 20px;
-}
-
-.pull-left,
-.pull-right {
-  float: left;
-  width: 50%;
-  height: 100%;
-  border: 1px solid;
-  box-sizing: border-box;
+<style lang="less" scoped>
+.article-edit {
 }
 </style>
