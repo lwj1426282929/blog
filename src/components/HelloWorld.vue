@@ -40,10 +40,6 @@ export default {
     }
   },
 
-  created () {
-    this.$http.get('blog', {params: { asd: '123' }})
-  },
-
   methods: {
     // 保存
     save (value, render) {
