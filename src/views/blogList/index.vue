@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import api from '../../service/api.js'
+import api from '@/service/api'
 export default {
   name: 'BlogList',
 
@@ -28,12 +28,21 @@ export default {
     // 获取列表
     async getBolgList () {
       this.blogList = await this.$http.get(api.blog.getList)
+      for (let item of this.blogList) {
+        let content = this.delHtmlTag(item.content)
+        console.log(content)
+      }
+    },
+
+    // 提取文本
+    delHtmlTag (str) {
+      return str.replace(/<[^>]+>/g, '')
     },
 
     // 跳转页面
     computeBlogRouter (id) {
       return {
-        name: 'article',
+        name: 'blogView',
         params: { id }
       }
     }

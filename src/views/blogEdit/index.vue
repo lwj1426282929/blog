@@ -1,8 +1,13 @@
 <template>
-  <div class="article-edit">
-    <mavon-editor v-if="editor = 'markdown'" code-style="atom-one-dark" v-model="context" @save="save" @imgAdd="imgAdd" @imgDel="imgDel" />
+  <div class="blog-edit">
+    <mavon-editor v-if="editor === 'markdown'"
+                  code-style="atom-one-dark"
+                  v-model="content_markdown" />
 
-    <quill-editor v-else v-model="content" :options="option" />
+    <quill-editor v-else
+                  v-model="content_quill"
+                  :options="option" />
+    <button @click="submit">提交</button>
   </div>
 </template>
 
@@ -15,6 +20,8 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
+import api from '@/service/api'
+
 export default {
   name: 'BlogEdit',
 
@@ -23,40 +30,51 @@ export default {
     quillEditor
   },
 
-  data () { 
+  data () {
     return {
-      editor: 'markdown',
-      context: '',
-      html: '',
-      content: '',
+      editor: 'quill',
+      content_quill: '',
+      content_markdown: '',
       option: {
         placeholder: '开始编辑...'
       }
     }
   },
 
+  created () {
+    this.getBolg(this.$route.params.id)
+  },
+
   methods: {
-    // 保存
-    save (value, render) {
-      this.html = render.toString()
-      console.log(this.html)
+    // 获取文章内容
+    async getBolg (id) {
+      let res = await this.$http.get(api.blog.getById, { params: { id } })
+      this.editor = res.blog_type
+      if (this.editor === 'markdown') {
+        this.content_markdown = res.content
+      } else {
+        this.content_quill = res.content
+      }
     },
 
-    // 添加图片
-    imgAdd (name, file) {
-      console.log(name)
-      console.log(file)
-    },
-
-    // 删除图片
-    imgDel (name) {
-      console.log(name)
+    // 提交
+    async submit () {
+      let blog = {
+        id: this.$route.params.id,
+        title: '123',
+        content: this.content_quill || this.content_markdown,
+        markdown_content: this.editor
+      }
+      let res = await this.$http.put(api.blog.update, blog)
+      console.log(res)
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.article-edit {
+.blog-edit {
+  width: 60%;
+  margin: 0 auto;
 }
 </style>
