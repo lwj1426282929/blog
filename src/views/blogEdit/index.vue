@@ -72,9 +72,13 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .blog-edit {
   width: 60%;
   margin: 0 auto;
+
+  // .ql-container.ql-snow, .ql-toolbar.ql-snow{
+  //   border: 0 none;
+  // }
 }
 </style>

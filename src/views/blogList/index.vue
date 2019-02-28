@@ -4,7 +4,7 @@
                  v-for="(blog, index) in blogList"
                  :to="computeBlogRouter(blog.id)"
                  :key="index">
-      <div class="blog-head">{{ blog.title }}</div>
+      <div>{{ blog.title }}</div>
     </router-link>
   </div>
 </template>
@@ -34,7 +34,7 @@ export default {
       }
     },
 
-    // 提取文本
+    // 取出HTML标签
     delHtmlTag (str) {
       return str.replace(/<[^>]+>/g, '')
     },
