@@ -1,16 +1,21 @@
 <template>
   <div class="blog-edit">
-    <div class="blog-edit-head">
-      <input type="text" placeholder="请输入文章标题">
-    </div>
+    <input class="blog-edit-title"
+           type="text"
+           :placeholder="placeholder"
+           v-model="blog_title"
+           @focus="clearPlaceholder"
+           @blur="appendPlaceholder" />
     <mavon-editor v-if="editor === 'markdown'"
                   code-style="atom-one-dark"
                   v-model="content_markdown" />
-
     <quill-editor v-else
                   v-model="content_quill"
                   :options="option" />
-    <button @click="submit">提交</button>
+    <div class="blog-edit-foot">
+      <div class="blog-btn blog-btn-publish"
+           @click="submit">发布</div>
+    </div>
   </div>
 </template>
 
@@ -36,6 +41,8 @@ export default {
   data () {
     return {
       editor: 'quill',
+      placeholder: '请输入文章标题...',
+      blog_title: '',
       content_quill: '',
       content_markdown: '',
       option: {
@@ -51,10 +58,21 @@ export default {
   },
 
   methods: {
+    // 清除placeholder
+    clearPlaceholder () {
+      this.placeholder = ''
+    },
+
+    // 显示placeholder
+    appendPlaceholder () {
+      this.placeholder = '请输入文章标题...'
+    },
+
     // 获取文章内容
     async getBolg (id) {
       let res = await this.$http.get(api.blog.getById, { params: { id } })
       this.editor = res.blog_type
+      this.blog_title = res.title
       if (this.editor === 'markdown') {
         this.content_markdown = res.content
       } else {
@@ -64,27 +82,67 @@ export default {
 
     // 提交
     async submit () {
-      let blog = {
-        id: this.$route.params.id,
-        title: '123',
-        content: this.content_quill || this.content_markdown,
-        markdown_content: this.editor
+      if (this.$route.params.id === 'new') { // 新增
+        let blog = {
+          title: this.blog_title,
+          content: this.content_quill || this.content_markdown,
+          blog_type: 'markdown'
+        }
+        await this.$http.post(api.blog.add, blog)
+      } else { // 更新
+        let blog = {
+          id: this.$route.params.id,
+          title: this.blog_title,
+          content: this.content_quill || this.content_markdown
+        }
+        await this.$http.put(api.blog.update, blog)
       }
-      let res = await this.$http.put(api.blog.update, blog)
-      console.log(res)
     }
   }
 }
 </script>
 
 <style lang="less">
-// .blog-edit {
-//   width: 60%;
-//   padding: 10px;
-//   margin: 0 auto;
+.blog-edit {
+  padding: 70px 10px 0px 10px;
+  .blog-edit-title {
+    margin: 0 auto;
+    width: 100%;
+    height: 50px;
+    text-align: center;
+    font-size: 30px;
+    border: 0 none;
 
-//   .quill-editor {
-//     height: calc(100vh - 140px);
-//   }
-// }
+    &::-ms-input-placeholder,
+    &::-webkit-input-placeholder,
+    &::-moz-placeholder {
+      text-align: center;
+      font-size: 30px;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .quill-editor {
+    width: 70%;
+    margin: 0 auto;
+
+    .ql-container.ql-snow {
+      height: calc(100vh - 250px);
+    }
+  }
+
+  .blog-edit-foot {
+    width: 70%;
+    height: 40px;
+    margin: 0 auto;
+
+    .blog-btn-publish {
+      float: right;
+      background: burlywood;
+    }
+  }
+}
 </style>

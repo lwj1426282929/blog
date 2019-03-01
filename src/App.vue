@@ -26,11 +26,10 @@ export default {
   width: 100%;
   height: 60px;
   position: fixed;
-  opacity: .5;
+  border-bottom: 1px solid #ccc;
 }
 
 .blog-body {
-  height: calc(100vh - 60px);
   padding-top: 60px;
 }
 </style>

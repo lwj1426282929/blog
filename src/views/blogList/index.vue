@@ -51,9 +51,4 @@ export default {
 </script>
 
 <style lang="less" scoped>
-// .blog-list {
-//   width: 60%;
-//   margin: 0 auto;
-//   border-radius: 5px;
-// }
 </style>
