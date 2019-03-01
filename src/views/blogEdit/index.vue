@@ -1,17 +1,21 @@
 <template>
   <div class="blog-edit">
+
     <input class="blog-edit-title"
            type="text"
            :placeholder="placeholder"
            v-model="blog_title"
            @focus="clearPlaceholder"
            @blur="appendPlaceholder" />
+
     <mavon-editor v-if="editor === 'markdown'"
                   code-style="atom-one-dark"
                   v-model="content_markdown" />
+
     <quill-editor v-else
                   v-model="content_quill"
                   :options="option" />
+
     <div class="blog-edit-foot">
       <div class="blog-btn blog-btn-publish"
            @click="submit">发布</div>
