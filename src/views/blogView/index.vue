@@ -44,12 +44,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.blog-article {
-  width: 60%;
-  margin: 0 auto;
+// .blog-article {
+//   width: 60%;
+//   margin: 0 auto;
 
-  .ql-container.ql-snow{
-    border: 0 none;
-  }
-}
+//   .ql-container.ql-snow{
+//     border: 0 none;
+//   }
+// }
 </style>

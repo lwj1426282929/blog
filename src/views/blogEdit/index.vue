@@ -1,5 +1,8 @@
 <template>
   <div class="blog-edit">
+    <div class="blog-edit-head">
+      <input type="text" placeholder="请输入文章标题">
+    </div>
     <mavon-editor v-if="editor === 'markdown'"
                   code-style="atom-one-dark"
                   v-model="content_markdown" />
@@ -42,7 +45,9 @@ export default {
   },
 
   created () {
-    this.getBolg(this.$route.params.id)
+    if (this.$route.params.id !== 'new') {
+      this.getBolg(this.$route.params.id)
+    }
   },
 
   methods: {
@@ -73,12 +78,13 @@ export default {
 </script>
 
 <style lang="less">
-.blog-edit {
-  width: 60%;
-  margin: 0 auto;
+// .blog-edit {
+//   width: 60%;
+//   padding: 10px;
+//   margin: 0 auto;
 
-  // .ql-container.ql-snow, .ql-toolbar.ql-snow{
-  //   border: 0 none;
-  // }
-}
+//   .quill-editor {
+//     height: calc(100vh - 140px);
+//   }
+// }
 </style>
