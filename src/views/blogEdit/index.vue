@@ -1,25 +1,13 @@
 <template>
   <div class="blog-edit">
-
-    <input class="blog-edit-title"
-           type="text"
-           :placeholder="placeholder"
-           v-model="blog_title"
-           @focus="clearPlaceholder"
-           @blur="appendPlaceholder" />
-
-    <mavon-editor v-if="editor === 'markdown'"
-                  code-style="atom-one-dark"
-                  v-model="content_markdown" />
-
-    <quill-editor v-else
-                  v-model="content_quill"
-                  :options="option" />
-
-    <div class="blog-edit-foot">
-      <div class="blog-btn blog-btn-publish"
-           @click="submit">发布</div>
+    <div class="blog-edit-title">
+      <mu-text-field v-model="blog_title" :placeholder="placeholder" color="#42c02e" full-width @focus="clearPlaceholder" @blur="appendPlaceholder"></mu-text-field>
+      <mu-button class="blog-btn-publish" round color="success" @click="submit">发布</mu-button>
     </div>
+
+    <mavon-editor code-style="atom-one-dark" v-if="editor === 'markdown'" v-model="content_markdown" />
+
+    <quill-editor :options="option" v-else v-model="content_quill" />
   </div>
 </template>
 
@@ -85,7 +73,18 @@ export default {
     },
 
     // 提交
-    async submit () {
+    submit () {
+      if (!this.blog_title) {
+        return this.$alert('请输入文章标题', '提示')
+      }
+      if (!this.content_markdown || !this.content_quill) {
+        return this.$alert('请输入文章内容', '提示')
+      }
+      this.publish()
+    },
+
+    // 发布
+    async publish () {
       if (this.$route.params.id === 'new') { // 新增
         let blog = {
           title: this.blog_title,
@@ -108,44 +107,39 @@ export default {
 
 <style lang="less">
 .blog-edit {
-  padding: 70px 10px 0px 10px;
-  .blog-edit-title {
-    margin: 0 auto;
-    width: 100%;
-    height: 50px;
-    text-align: center;
-    font-size: 30px;
-    border: 0 none;
+  padding: 10px 0;
 
-    &::-ms-input-placeholder,
-    &::-webkit-input-placeholder,
-    &::-moz-placeholder {
+  .blog-edit-title {
+    width: 60%;
+    margin: 0 auto;
+    position: relative;
+
+    .mu-text-field-input {
+      height: 50px;
       text-align: center;
       font-size: 30px;
+      &::-ms-input-placeholder,
+      &::-webkit-input-placeholder,
+      &::-moz-placeholder {
+        text-align: center !important;
+        font-size: 30px !important;
+        color: red;
+      }
     }
 
-    &:focus {
-      outline: none;
+    .blog-btn-publish {
+      position: absolute;
+      bottom: 30px;
+      right: -200px;
     }
   }
 
   .quill-editor {
-    width: 70%;
+    width: 85%;
     margin: 0 auto;
 
     .ql-container.ql-snow {
-      height: calc(100vh - 250px);
-    }
-  }
-
-  .blog-edit-foot {
-    width: 70%;
-    height: 40px;
-    margin: 0 auto;
-
-    .blog-btn-publish {
-      float: right;
-      background: burlywood;
+      height: calc(100vh - 200px);
     }
   }
 }

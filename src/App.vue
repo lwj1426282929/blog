@@ -1,35 +1,34 @@
 <template>
   <div id="app">
-    <div class="blog-head">
-    </div>
-    <div>
-      <router-view class="blog-body" />
-    </div>
+    <blog-header v-if="showHeader" />
+    <router-view class="blog-body" />
   </div>
 </template>
 
 <script>
+import { BlogHeader } from '@/components'
+
 export default {
-  name: 'App'
+  name: 'App',
+
+  components: {
+    BlogHeader
+  },
+
+  computed: {
+    showHeader () {
+      return this.$route.name === 'blogList' || this.$route.name === 'blogView'
+    }
+  }
 }
 </script>
 
 <style lang="less">
 @import "./style/index.less";
+@import "./assets/font/iconfont.css";
 
 #app {
   width: 100%;
   height: 100%;
-}
-
-.blog-head {
-  width: 100%;
-  height: 60px;
-  position: fixed;
-  border-bottom: 1px solid #ccc;
-}
-
-.blog-body {
-  padding-top: 60px;
 }
 </style>
