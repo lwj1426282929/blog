@@ -2,7 +2,7 @@
   <div class="blog-edit">
     <div class="blog-edit-title">
       <mu-text-field v-model="blog_title" :placeholder="placeholder" color="#42c02e" full-width @focus="clearPlaceholder" @blur="appendPlaceholder"></mu-text-field>
-      <mu-button class="blog-btn-publish" round color="success" @click="submit">发布</mu-button>
+      <mu-button class="blog-btn-publish" round color="#42c02e" @click="submit">发布</mu-button>
     </div>
 
     <mavon-editor code-style="atom-one-dark" v-if="editor === 'markdown'" v-model="content_markdown" />
