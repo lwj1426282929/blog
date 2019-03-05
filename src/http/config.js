@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Notification } from 'element-ui'
 
 
 const instance = axios.create({
@@ -11,6 +12,10 @@ instance.interceptors.request.use(config => {
   config.headers['Content-Type'] = 'application/json;charset=UTF-8'
   return config
 }, error => {
+  Notification.error({
+    title: '正确',
+    message: error
+  })
   return Promise.reject(error)
 })
 
