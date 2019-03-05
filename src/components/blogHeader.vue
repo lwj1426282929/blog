@@ -4,7 +4,7 @@
       <mu-row class="blog-head-container">
         <div class="logo" />
         <mu-col class="blog-head-right">
-          <mu-flex class="flex-wrapper" style="height: 60px; padding: 5px 0;" justify-content="end">
+          <mu-flex class="flex-wrapper" style="height: 60px; padding: 8px 0;" justify-content="end">
             <mu-avatar style="cursor: pointer;" @click="open = true">
               <img src="https://muse-ui.org/img/uicon.ac3913bf.jpg">
             </mu-avatar>

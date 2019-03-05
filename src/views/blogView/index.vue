@@ -1,10 +1,9 @@
 <template>
   <div class="blog-article">
     <div class="ql-snow ql-container">
-      <div class="ql-editor"
-           v-html="html" />
+      <div class="ql-editor" v-html="html" />
     </div>
-    <button @click="editBlog">编辑</button>
+    <mu-button class="pull-right" flat color="#42c02e" @click="editBlog">编辑文章</mu-button>
   </div>
 </template>
 
@@ -44,4 +43,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.blog-article {
+  width: 80%;
+  margin: 0 auto;
+  padding-top: 70px;
+  .ql-container.ql-snow {
+    border: 0 none;
+  }
+}
 </style>

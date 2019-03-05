@@ -3,6 +3,7 @@ import App from './App'
 import router from './router'
 import http from './http'
 import instance from './http/config'
+import store from './store'
 
 import MuseUI from 'muse-ui'
 import Message from 'muse-ui-message'
@@ -19,6 +20,7 @@ Vue.use(http, instance)
 new Vue({
   el: '#app',
   router,
+  store,
   components: {
     App
   },

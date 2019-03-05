@@ -1,9 +1,6 @@
 <template>
   <div class="blog-list">
-    <router-link class="blog-container"
-                 v-for="(blog, index) in blogList"
-                 :to="computeBlogRouter(blog.id)"
-                 :key="index">
+    <router-link class="blog-container" v-for="(blog, index) in blogList" :to="computeBlogRouter(blog.id)" :key="index">
       <div>{{ blog.title }}</div>
     </router-link>
   </div>
@@ -51,4 +48,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.blog-list {
+  padding-top: 70px;
+}
 </style>

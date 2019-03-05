@@ -3,6 +3,7 @@
     <div class="blog-edit-title">
       <mu-text-field v-model="blog_title" :placeholder="placeholder" color="#42c02e" full-width @focus="clearPlaceholder" @blur="appendPlaceholder"></mu-text-field>
       <mu-button class="blog-btn-publish" round color="#42c02e" @click="submit">发布</mu-button>
+      <mu-button class="blog-btn-cancle" flat round color="#42c02e" @click="cancle">取消</mu-button>
     </div>
 
     <mavon-editor code-style="atom-one-dark" v-if="editor === 'markdown'" v-model="content_markdown" />
@@ -21,6 +22,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 
 import api from '@/service/api'
+import { mapState } from 'vuex'
 
 export default {
   name: 'BlogEdit',
@@ -32,7 +34,7 @@ export default {
 
   data () {
     return {
-      editor: 'quill',
+      editor: '',
       placeholder: '请输入文章标题...',
       blog_title: '',
       content_quill: '',
@@ -43,9 +45,17 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      user: state => state.user.userInfo
+    })
+  },
+
   created () {
     if (this.$route.params.id !== 'new') {
       this.getBolg(this.$route.params.id)
+    } else {
+      this.editor = this.user.editor
     }
   },
 
@@ -89,7 +99,8 @@ export default {
         let blog = {
           title: this.blog_title,
           content: this.content_quill || this.content_markdown,
-          blog_type: 'markdown'
+          blog_type: this.editor,
+          author: this.user.name
         }
         await this.$http.post(api.blog.add, blog)
       } else { // 更新
@@ -100,6 +111,15 @@ export default {
         }
         await this.$http.put(api.blog.update, blog)
       }
+    },
+
+    // 取消
+    cancle () {
+      this.$confirm('是否确定取消?  取消之后不会保存您所编辑的文字', '提示').then(({ result, value }) => {
+        if (result) {
+          this.$router.push({ name: 'blogList' })
+        }
+      })
     }
   }
 }
@@ -130,7 +150,14 @@ export default {
     .blog-btn-publish {
       position: absolute;
       bottom: 30px;
-      right: -200px;
+      right: -140px;
+    }
+    .blog-btn-cancle {
+      position: absolute;
+      bottom: 30px;
+      right: -240px;
+      border: 1px solid #42c02e;
+      border-radius: 50px;
     }
   }
 
@@ -139,8 +166,12 @@ export default {
     margin: 0 auto;
 
     .ql-container.ql-snow {
-      height: calc(100vh - 200px);
+      height: calc(100vh - 150px);
     }
+  }
+
+  .markdown-body {
+    height: calc(100vh - 110px);
   }
 }
 </style>
