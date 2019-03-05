@@ -2,7 +2,7 @@
   <div class="blog-edit">
     <div class="blog-edit-title">
       <mu-text-field v-model="blog_title" :placeholder="placeholder" color="#42c02e" full-width @focus="clearPlaceholder" @blur="appendPlaceholder"></mu-text-field>
-      <mu-button class="blog-btn-publish" round color="#42c02e" @click="submit" v-loading="publishing">发布</mu-button>
+      <mu-button class="blog-btn-publish" round color="#42c02e" @click="submit" :disabled="publishing">{{ publishText }}</mu-button>
       <mu-button class="blog-btn-cancle" flat round color="#42c02e" @click="cancle">取消</mu-button>
     </div>
 
@@ -23,6 +23,7 @@ import 'mavon-editor/dist/css/index.css'
 
 import api from '@/service/api'
 import { mapState } from 'vuex'
+import { Message } from 'element-ui'
 
 export default {
   name: 'BlogEdit',
@@ -43,7 +44,8 @@ export default {
       option: {
         placeholder: '开始编辑...'
       },
-      publishing: true
+      publishing: false,
+      publishText: '发布'
     }
   },
 
@@ -98,6 +100,7 @@ export default {
     // 发布
     async publish () {
       this.publishing = true
+      this.publishText = '发布中'
       if (this.$route.params.id === 'new') { // 新增
         let blog = {
           title: this.blog_title,
@@ -106,7 +109,10 @@ export default {
         }
         blog.content = this.editor === 'markdown' ? this.content_markdown : this.content_quill
         blog.markdown_content = this.editor === 'markdown' ? this.markdown_content : ''
-        await this.$http.post(api.blog.add, blog)
+        let res = await this.$http.post(api.blog.add, blog)
+        if (res.success) {
+          this.success()
+        }
       } else { // 更新
         let blog = {
           id: this.$route.params.id,
@@ -114,9 +120,13 @@ export default {
         }
         blog.content = this.editor === 'markdown' ? this.content_markdown : this.content_quill
         blog.markdown_content = this.editor === 'markdown' ? this.markdown_content : ''
-        await this.$http.put(api.blog.update, blog)
+        let res = await this.$http.put(api.blog.update, blog)
+        if (res.success) {
+          this.success()
+        }
       }
       this.publishing = false
+      this.publishText = '发布'
     },
 
     // 取消
@@ -131,7 +141,18 @@ export default {
     // markdown编辑
     change (value, render) {
       this.content_markdown = render.toString()
-    }
+    },
+
+    // 发布成功
+    success () {
+      Message.success('发布成功!')
+      setTimeout(() => {
+        this.$router.push({ name: 'blogList' })
+      }, 3000)
+    },
+
+    // 发布失败
+    error () { }
   }
 }
 </script>

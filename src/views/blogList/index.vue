@@ -1,8 +1,18 @@
 <template>
   <div class="blog-list">
-    <router-link class="blog-container" v-for="(blog, index) in blogList" :to="computeBlogRouter(blog.id)" :key="index">
-      <div>{{ blog.title }}</div>
-    </router-link>
+    <mu-row>
+      <mu-col span="3">
+        <div class="grid-cell">1</div>
+      </mu-col>
+      <mu-col span="6" style="border: 1px solid;">
+        <router-link class="blog-container" v-for="(blog, index) in blogList" :to="computeBlogRouter(blog.id)" :key="index">
+          <div>{{ blog.title }}</div>
+        </router-link>
+      </mu-col>
+      <mu-col span="3">
+        <div class="grid-cell">2</div>
+      </mu-col>
+    </mu-row>
   </div>
 </template>
 
@@ -49,6 +59,6 @@ export default {
 
 <style lang="less" scoped>
 .blog-list {
-  padding-top: 70px;
+  padding: 70px 20px 20px 20px;
 }
 </style>

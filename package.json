@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "element-ui": "^2.6.1",
     "mavon-editor": "^2.6.17",
     "moment": "^2.24.0",
     "muse-ui": "^3.0.2",
