@@ -2,24 +2,24 @@
   <div class="blog-edit">
     <div class="blog-edit-title">
       <mu-text-field v-model="blog_title" :placeholder="placeholder" color="#42c02e" full-width @focus="clearPlaceholder" @blur="appendPlaceholder"></mu-text-field>
-      <mu-button class="blog-btn-publish" round color="#42c02e" @click="submit">发布</mu-button>
+      <mu-button class="blog-btn-publish" round color="#42c02e" @click="submit" v-loading="publishing">发布</mu-button>
       <mu-button class="blog-btn-cancle" flat round color="#42c02e" @click="cancle">取消</mu-button>
     </div>
 
-    <mavon-editor code-style="atom-one-dark" v-if="editor === 'markdown'" v-model="content_markdown" />
+    <mavon-editor ishljs code-style="atom-one-dark" v-if="editor === 'markdown'" v-model="markdown_content" @change="change" />
 
     <quill-editor :options="option" v-else v-model="content_quill" />
   </div>
 </template>
 
 <script>
-import { mavonEditor } from 'mavon-editor'
-import 'mavon-editor/dist/css/index.css'
-
 import { quillEditor } from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+
+import { mavonEditor } from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 
 import api from '@/service/api'
 import { mapState } from 'vuex'
@@ -39,9 +39,11 @@ export default {
       blog_title: '',
       content_quill: '',
       content_markdown: '',
+      markdown_content: '',
       option: {
         placeholder: '开始编辑...'
-      }
+      },
+      publishing: true
     }
   },
 
@@ -76,7 +78,7 @@ export default {
       this.editor = res.blog_type
       this.blog_title = res.title
       if (this.editor === 'markdown') {
-        this.content_markdown = res.content
+        this.markdown_content = res.markdown_content
       } else {
         this.content_quill = res.content
       }
@@ -87,7 +89,7 @@ export default {
       if (!this.blog_title) {
         return this.$alert('请输入文章标题', '提示')
       }
-      if (!this.content_markdown || !this.content_quill) {
+      if ((this.editor === 'markdown' && !this.content_markdown) || (this.editor === 'quill' && !this.content_quill)) {
         return this.$alert('请输入文章内容', '提示')
       }
       this.publish()
@@ -95,22 +97,26 @@ export default {
 
     // 发布
     async publish () {
+      this.publishing = true
       if (this.$route.params.id === 'new') { // 新增
         let blog = {
           title: this.blog_title,
-          content: this.content_quill || this.content_markdown,
           blog_type: this.editor,
           author: this.user.name
         }
+        blog.content = this.editor === 'markdown' ? this.content_markdown : this.content_quill
+        blog.markdown_content = this.editor === 'markdown' ? this.markdown_content : ''
         await this.$http.post(api.blog.add, blog)
       } else { // 更新
         let blog = {
           id: this.$route.params.id,
-          title: this.blog_title,
-          content: this.content_quill || this.content_markdown
+          title: this.blog_title
         }
+        blog.content = this.editor === 'markdown' ? this.content_markdown : this.content_quill
+        blog.markdown_content = this.editor === 'markdown' ? this.markdown_content : ''
         await this.$http.put(api.blog.update, blog)
       }
+      this.publishing = false
     },
 
     // 取消
@@ -120,6 +126,11 @@ export default {
           this.$router.push({ name: 'blogList' })
         }
       })
+    },
+
+    // markdown编辑
+    change (value, render) {
+      this.content_markdown = render.toString()
     }
   }
 }

@@ -31,12 +31,9 @@ export default {
       name: '赖维健',
       age: 25,
       sex: '男',
-      editor: 'quill'
+      editor: 'markdown',
+      address: '江西·宜春'
     })
-  },
-
-  mounted () {
-    console.log(this.user)
   }
 }
 </script>
