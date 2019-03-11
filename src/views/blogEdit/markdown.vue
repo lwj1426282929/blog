@@ -1,28 +1,22 @@
 <template>
   <div class="blog-edit">
     <div class="blog-edit-title">
-      <mu-text-field v-model="blog_title" :placeholder="placeholder" color="#42c02e" full-width @focus="clearPlaceholder" @blur="appendPlaceholder"></mu-text-field>
-      <mu-button class="blog-btn-publish" round color="#42c02e" @click="submit" :disabled="publishing">{{ publishText }}</mu-button>
-      <mu-button class="blog-btn-cancle" flat round color="#42c02e" @click="cancle">取消</mu-button>
+      <mu-text-field full-width color="#42c02e" :placeholder="placeholder" v-model="blog_title" @focus="clearPlaceholder" @blur="appendPlaceholder" />
+      <mu-button round color="#42c02e" class="blog-btn-publish" :disabled="publishing" @click="submit">{{ publishText }}</mu-button>
+      <mu-button flat round color="#42c02e" class="blog-btn-cancle" @click="cancle">取消</mu-button>
     </div>
+
     <div class="blog-edit-tags">
-      <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)" :class="'tag-' + tag.toLowerCase()">{{tag}}</el-tag>
-      <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm" />
-      <el-button v-else class="button-new-tag" size="small" :disabled="dynamicTags.length > 4" @click="showInput">+ New Tag</el-button>
+      <el-tag closable :key="tag" type="success" :disable-transitions="false" :class="'tag-' + tag.toLowerCase()" v-for="tag in dynamicTags" @close="handleClose(tag)">{{tag}}</el-tag>
+      <el-input ref="saveTagInput" size="small" class="input-new-tag" v-if="inputVisible" v-model="inputValue" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm" />
+      <el-button class="button-new-tag" type="success" size="small" color="#42c02e" :disabled="dynamicTags.length > 4" v-else @click="showInput">+ New Tag</el-button>
     </div>
 
-    <mavon-editor ishljs code-style="atom-one-dark" v-if="editor === 'markdown'" v-model="markdown_content" @change="change" />
-
-    <quill-editor :options="option" v-else v-model="content_quill" />
+    <mavon-editor ishljs code-style="atom-one-dark" v-model="markdown_content" @change="change" />
   </div>
 </template>
 
 <script>
-import { quillEditor } from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
-
 import { mavonEditor } from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 
@@ -31,11 +25,10 @@ import { mapState } from 'vuex'
 import { Message, Tag, Input, Button } from 'element-ui'
 
 export default {
-  name: 'BlogEdit',
+  name: 'MarkdownEdit',
 
   components: {
     mavonEditor,
-    quillEditor,
     'el-tag': Tag,
     'el-input': Input,
     'el-button': Button
@@ -43,15 +36,10 @@ export default {
 
   data () {
     return {
-      editor: '',
       placeholder: '请输入文章标题...',
       blog_title: '',
-      content_quill: '',
       content_markdown: '',
       markdown_content: '',
-      option: {
-        placeholder: '开始编辑...'
-      },
       publishing: false,
       publishText: '发布',
       dynamicTags: [],
@@ -69,8 +57,6 @@ export default {
   created () {
     if (this.$route.params.id !== 'new') {
       this.getBolg(this.$route.params.id)
-    } else {
-      this.editor = this.user.editor
     }
   },
 
@@ -88,14 +74,9 @@ export default {
     // 获取文章内容
     async getBolg (id) {
       let res = await this.$http.get(api.blog.getById, { params: { id } })
-      this.editor = res.data.blog_type
       this.blog_title = res.data.title
       this.dynamicTags = res.data.tag
-      if (this.editor === 'markdown') {
-        this.markdown_content = res.data.markdown_content
-      } else {
-        this.content_quill = res.data.content
-      }
+      this.markdown_content = res.data.markdown_content
     },
 
     // 提交
@@ -103,7 +84,7 @@ export default {
       if (!this.blog_title) {
         return this.$alert('请输入文章标题', '提示')
       }
-      if ((this.editor === 'markdown' && !this.content_markdown) || (this.editor === 'quill' && !this.content_quill)) {
+      if (!this.content_markdown) {
         return this.$alert('请输入文章内容', '提示')
       }
       this.publish()
@@ -116,12 +97,12 @@ export default {
       if (this.$route.params.id === 'new') { // 新增
         let blog = {
           title: this.blog_title,
-          blog_type: this.editor,
+          blog_type: 'markdown',
           author: this.user.name,
           tag: this.dynamicTags
         }
-        blog.content = this.editor === 'markdown' ? this.content_markdown : this.content_quill
-        blog.markdown_content = this.editor === 'markdown' ? this.markdown_content : ''
+        blog.content = this.content_markdown
+        blog.markdown_content = this.markdown_content
         let res = await this.$http.post(api.blog.add, blog)
         if (res.success) {
           this.success()
@@ -132,8 +113,8 @@ export default {
           title: this.blog_title,
           tag: this.dynamicTags
         }
-        blog.content = this.editor === 'markdown' ? this.content_markdown : this.content_quill
-        blog.markdown_content = this.editor === 'markdown' ? this.markdown_content : ''
+        blog.content = this.content_markdown
+        blog.markdown_content = this.markdown_content
         let res = await this.$http.put(api.blog.update, blog)
         if (res.success) {
           this.success()
@@ -164,9 +145,6 @@ export default {
         this.$router.push({ name: 'blogList' })
       }, 3000)
     },
-
-    // 发布失败
-    error () { },
 
     // 删除标签
     handleClose (tag) {
@@ -202,7 +180,6 @@ export default {
     width: 60%;
     margin: 0 auto;
     position: relative;
-
     .mu-text-field-input {
       height: 40px;
       text-align: center;
@@ -215,7 +192,6 @@ export default {
         color: red;
       }
     }
-
     .blog-btn-publish {
       position: absolute;
       bottom: 30px;
@@ -230,15 +206,6 @@ export default {
     }
   }
 
-  .quill-editor {
-    width: 85%;
-    margin: 0 auto;
-
-    .ql-container.ql-snow {
-      height: calc(100vh - 150px);
-    }
-  }
-
   .markdown-body {
     height: calc(100vh - 150px);
   }
@@ -247,11 +214,9 @@ export default {
     margin-bottom: 10px;
     width: 80vw;
     text-align: right;
-
     .el-tag + .el-tag {
       margin-left: 10px;
     }
-
     .button-new-tag {
       margin-left: 10px;
       height: 32px;
@@ -259,11 +224,15 @@ export default {
       padding-top: 0;
       padding-bottom: 0;
     }
-
     .input-new-tag {
       width: 90px;
       margin-left: 10px;
       vertical-align: bottom;
+      border-color: #42c02e;
+      input:focus {
+        outline: none;
+        border-color: #42c02e;
+      }
     }
   }
 }

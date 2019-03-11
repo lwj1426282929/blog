@@ -6,7 +6,7 @@
           <router-link class="blog-title" :to="computeBlogRouter(blog.id)">{{ blog.title }}</router-link>
           <div class="blog-desc">{{ blog.desc }}</div>
           <div class="blog-tag">
-            <span v-for="(tag, index) in blog.tag" :key="index" class="el-tag el-tag--small" :class="'tag-' + tag.toLowerCase()">{{ tag }}</span>
+            <el-tag :key="index" v-for="(tag, index) in blog.tag" type="success" :class="'tag-' + tag.toLowerCase()">{{tag}}</el-tag>
           </div>
         </div>
       </mu-col>
@@ -24,7 +24,7 @@ export default {
   name: 'BlogList',
 
   components: {
-    Tag
+    'el-tag': Tag
   },
 
   data () {
@@ -85,6 +85,10 @@ export default {
     font-size: 24px;
     color: #333;
     font-weight: 600;
+    &:hover {
+      text-decoration: underline;
+      color: #42c02e;
+    }
   }
 
   .blog-desc {

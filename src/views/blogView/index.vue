@@ -1,7 +1,14 @@
 <template>
   <div class="blog-article">
     <h1 class="blog-title">{{ blog.title }}</h1>
-    <p class="align-right">{{ introduce }}</p>
+    <p>{{ introduce }}</p>
+    <mu-flex justify-content="end" style="padding-bottom: 20px;">
+      <mu-flex justify-content="center" v-if="showOpreat">
+        <mu-button flat color="#f44336" @click="dele">删除文章</mu-button>
+        <mu-button flat color="#42c02e" @click="editBlog">编辑文章</mu-button>
+      </mu-flex>
+    </mu-flex>
+
     <mavonEditor ishljs code-style="atom-one-dark" v-show="false"></mavonEditor>
 
     <div class="ql-snow ql-container" v-if="blog.blog_type === 'quill'">
@@ -11,13 +18,6 @@
     <div class="markdown-body" v-else>
       <div v-html="blog.content"></div>
     </div>
-
-    <mu-flex justify-content="end" style="padding-bottom: 20px;">
-      <mu-flex justify-content="center" v-if="showOpreat">
-        <mu-button flat color="#f44336" @click="dele">删除文章</mu-button>
-        <mu-button flat color="#42c02e" @click="editBlog">编辑文章</mu-button>
-      </mu-flex>
-    </mu-flex>
   </div>
 </template>
 
@@ -71,7 +71,11 @@ export default {
 
     // 编辑文章
     editBlog () {
-      this.$router.push({ name: 'blogEdit', params: { id: this.$route.params.id } })
+      if (this.blog.blog_type === 'markdown') {
+        this.$router.push({ name: 'blogEditMarkdown', params: { id: this.$route.params.id } })
+      } else {
+        this.$router.push({ name: 'blogEditQuill', params: { id: this.$route.params.id } })
+      }
     },
 
     // 点击删除

@@ -33,29 +33,16 @@
       <mu-list>
         <mu-list-item>
           <mu-list-item-action>
-            <mu-icon value="settings"></mu-icon>
+            编辑器
           </mu-list-item-action>
           <mu-list-item-content>
-            <mu-list-item-title>Setting</mu-list-item-title>
+            <mu-flex>
+              <mu-radio color="#42c02e" v-model="user.editor" value="markdown" label="Markdown" />
+              <mu-radio color="#42c02e" v-model="user.editor" value="quill" label="Quill" />
+            </mu-flex>
           </mu-list-item-content>
         </mu-list-item>
-        <mu-list-item>
-          <mu-list-item-action>
-            <mu-icon value="help_outline"></mu-icon>
-          </mu-list-item-action>
-          <mu-list-item-content>
-            <mu-list-item-title>Help</mu-list-item-title>
-          </mu-list-item-content>
-        </mu-list-item>
-        <mu-divider></mu-divider>
-        <mu-list-item>
-          <mu-list-item-action>
-            <mu-icon value="power_settings_new"></mu-icon>
-          </mu-list-item-action>
-          <mu-list-item-content>
-            <mu-list-item-title>Exit</mu-list-item-title>
-          </mu-list-item-content>
-        </mu-list-item>
+        <mu-divider />
       </mu-list>
       <mu-button flat color="#42c02e" class="blog-close-btn" @click="open = false">关闭</mu-button>
     </mu-drawer>
@@ -84,7 +71,21 @@ export default {
   methods: {
     // 写文章
     editBlog () {
-      this.$router.push({ name: 'blogEdit', params: { id: 'new' } })
+      if (this.user.editor === 'markdown') {
+        this.$router.push({ name: 'blogEditMarkdown', params: { id: 'new' } })
+      } else {
+        this.$router.push({ name: 'blogEditQuill', params: { id: 'new' } })
+      }
+    }
+  },
+
+  watch: {
+    user: {
+      handler (val) {
+        console.log(val.editor)
+      },
+      immediate: true,
+      deep: true
     }
   }
 }
@@ -169,7 +170,7 @@ export default {
     }
   }
 
-  .blog-close-btn{
+  .blog-close-btn {
     width: 220px;
     border: 1px solid #42c02e;
     margin: 20px auto;

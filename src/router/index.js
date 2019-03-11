@@ -20,9 +20,14 @@ const routes = [
     component: () => import('@/views/blogView')
   },
   {
-    path: '/blog/edit/:id',
-    name: 'blogEdit',
-    component: () => import('@/views/blogEdit')
+    path: '/blog/edit/markdown/:id',
+    name: 'blogEditMarkdown',
+    component: () => import('@/views/blogEdit/markdown')
+  },
+  {
+    path: '/blog/edit/quill/:id',
+    name: 'blogEditQuill',
+    component: () => import('@/views/blogEdit/quill')
   }
 ]
 
