@@ -26,6 +26,7 @@ import { mavonEditor } from 'mavon-editor'
 import api from '@/service/api'
 import moment from 'moment'
 import { mapState } from 'vuex'
+import { Message } from 'element-ui'
 
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -63,7 +64,8 @@ export default {
   methods: {
     // 获取文章内容
     async getBolg (id) {
-      this.blog = await this.$http.get(api.blog.getById, { params: { id } })
+      let res = await this.$http.get(api.blog.getById, { params: { id } })
+      this.blog = res.data
       this.introduce = '作者：' + this.blog.author + '\xa0\xa0\xa0\xa0\xa0\xa0更新时间：' + moment(this.blog.update_time).format('YYYY-MM-DD HH:mm:ss')
     },
 
@@ -87,6 +89,10 @@ export default {
         id: this.$route.params.id
       }
       await this.$http.delete(api.blog.delete, { data })
+      Message.success('删除成功!')
+      setTimeout(() => {
+        this.$router.push({ name: 'blogList' })
+      }, 3000)
     }
 
   }

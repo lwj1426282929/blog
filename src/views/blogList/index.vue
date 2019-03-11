@@ -1,16 +1,17 @@
 <template>
   <div class="blog-list">
     <mu-row>
-      <mu-col span="3">
-        <div class="grid-cell">1</div>
+      <mu-col span="9">
+        <div class="blog-container" v-for="(blog, index) in blogList" :key="index">
+          <router-link class="blog-title" :to="computeBlogRouter(blog.id)">{{ blog.title }}</router-link>
+          <div class="blog-desc">{{ blog.desc }}</div>
+          <div class="blog-tag">
+            <span v-for="(tag, index) in blog.tag" :key="index" class="el-tag el-tag--small" :class="'tag-' + tag.toLowerCase()">{{ tag }}</span>
+          </div>
+        </div>
       </mu-col>
-      <mu-col span="6" style="border: 1px solid;">
-        <router-link class="blog-container" v-for="(blog, index) in blogList" :to="computeBlogRouter(blog.id)" :key="index">
-          <div>{{ blog.title }}</div>
-        </router-link>
-      </mu-col>
       <mu-col span="3">
-        <div class="grid-cell">2</div>
+        <div class=""></div>
       </mu-col>
     </mu-row>
   </div>
@@ -18,8 +19,13 @@
 
 <script>
 import api from '@/service/api'
+import { Tag } from 'element-ui'
 export default {
   name: 'BlogList',
+
+  components: {
+    Tag
+  },
 
   data () {
     return {
@@ -34,10 +40,10 @@ export default {
   methods: {
     // 获取列表
     async getBolgList () {
-      this.blogList = await this.$http.get(api.blog.getList)
+      let res = await this.$http.get(api.blog.getList)
+      this.blogList = res.data
       for (let item of this.blogList) {
-        let content = this.delHtmlTag(item.content)
-        console.log(content)
+        item.desc = this.delHtmlTag(item.content)
       }
     },
 
@@ -53,12 +59,49 @@ export default {
         params: { id }
       }
     }
+  },
+
+  filters: {
+    tag (val) {
+      if (!val) return
+      return ''
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
 .blog-list {
-  padding: 70px 20px 20px 20px;
+  width: 80vw;
+  margin: 0 auto;
+  padding-top: 100px;
+
+  .blog-container {
+    display: block;
+    margin-bottom: 30px;
+  }
+
+  .blog-title {
+    font-size: 24px;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .blog-desc {
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .blog-tag {
+    margin-top: 8px;
+
+    .el-tag {
+      margin-right: 5px;
+    }
+  }
 }
 </style>

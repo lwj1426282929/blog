@@ -1,5 +1,7 @@
 import axios from 'axios'
-import { Notification } from 'element-ui'
+import {
+  Notification
+} from 'element-ui'
 
 
 const instance = axios.create({
@@ -12,17 +14,24 @@ instance.interceptors.request.use(config => {
   config.headers['Content-Type'] = 'application/json;charset=UTF-8'
   return config
 }, error => {
-  Notification.error({
-    title: '正确',
-    message: error
-  })
   return Promise.reject(error)
 })
 
 // 返回拦截器
 instance.interceptors.response.use(response => {
-  if (response.status === 200) return response.data
+  if (response.status === 200 && response.data.success) return response.data
+  Notification.error({
+    title: '错误',
+    dangerouslyUseHTMLString: true,
+    message: '<p><strong>代码：</strong> 404</p><p>' + response.data.message + '</p>'
+  })
 }, error => {
+  console.log(error)
+  // Notification.error({
+  //   title: '错误',
+  //   dangerouslyUseHTMLString: true,
+  //   message: '<p><strong>代码：</strong> 404</p><p>' + response.data.message + '</p>'
+  // })
   return Promise.reject(error)
 })
 

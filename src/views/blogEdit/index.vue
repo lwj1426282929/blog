@@ -5,6 +5,11 @@
       <mu-button class="blog-btn-publish" round color="#42c02e" @click="submit" :disabled="publishing">{{ publishText }}</mu-button>
       <mu-button class="blog-btn-cancle" flat round color="#42c02e" @click="cancle">取消</mu-button>
     </div>
+    <div class="blog-edit-tags">
+      <el-tag :key="tag" v-for="tag in dynamicTags" closable :disable-transitions="false" @close="handleClose(tag)" :class="'tag-' + tag.toLowerCase()">{{tag}}</el-tag>
+      <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm" />
+      <el-button v-else class="button-new-tag" size="small" :disabled="dynamicTags.length > 4" @click="showInput">+ New Tag</el-button>
+    </div>
 
     <mavon-editor ishljs code-style="atom-one-dark" v-if="editor === 'markdown'" v-model="markdown_content" @change="change" />
 
@@ -23,14 +28,17 @@ import 'mavon-editor/dist/css/index.css'
 
 import api from '@/service/api'
 import { mapState } from 'vuex'
-import { Message } from 'element-ui'
+import { Message, Tag, Input, Button } from 'element-ui'
 
 export default {
   name: 'BlogEdit',
 
   components: {
     mavonEditor,
-    quillEditor
+    quillEditor,
+    'el-tag': Tag,
+    'el-input': Input,
+    'el-button': Button
   },
 
   data () {
@@ -45,7 +53,10 @@ export default {
         placeholder: '开始编辑...'
       },
       publishing: false,
-      publishText: '发布'
+      publishText: '发布',
+      dynamicTags: [],
+      inputVisible: false,
+      inputValue: ''
     }
   },
 
@@ -77,12 +88,13 @@ export default {
     // 获取文章内容
     async getBolg (id) {
       let res = await this.$http.get(api.blog.getById, { params: { id } })
-      this.editor = res.blog_type
-      this.blog_title = res.title
+      this.editor = res.data.blog_type
+      this.blog_title = res.data.title
+      this.dynamicTags = res.data.tag
       if (this.editor === 'markdown') {
-        this.markdown_content = res.markdown_content
+        this.markdown_content = res.data.markdown_content
       } else {
-        this.content_quill = res.content
+        this.content_quill = res.data.content
       }
     },
 
@@ -105,7 +117,8 @@ export default {
         let blog = {
           title: this.blog_title,
           blog_type: this.editor,
-          author: this.user.name
+          author: this.user.name,
+          tag: this.dynamicTags
         }
         blog.content = this.editor === 'markdown' ? this.content_markdown : this.content_quill
         blog.markdown_content = this.editor === 'markdown' ? this.markdown_content : ''
@@ -116,7 +129,8 @@ export default {
       } else { // 更新
         let blog = {
           id: this.$route.params.id,
-          title: this.blog_title
+          title: this.blog_title,
+          tag: this.dynamicTags
         }
         blog.content = this.editor === 'markdown' ? this.content_markdown : this.content_quill
         blog.markdown_content = this.editor === 'markdown' ? this.markdown_content : ''
@@ -152,7 +166,30 @@ export default {
     },
 
     // 发布失败
-    error () { }
+    error () { },
+
+    // 删除标签
+    handleClose (tag) {
+      this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+    },
+
+    // 添加标签
+    showInput () {
+      this.inputVisible = true
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+
+    // 输入标签
+    handleInputConfirm () {
+      let inputValue = this.inputValue
+      if (inputValue) {
+        this.dynamicTags.push(inputValue)
+      }
+      this.inputVisible = false
+      this.inputValue = ''
+    }
   }
 }
 </script>
@@ -167,7 +204,7 @@ export default {
     position: relative;
 
     .mu-text-field-input {
-      height: 50px;
+      height: 40px;
       text-align: center;
       font-size: 30px;
       &::-ms-input-placeholder,
@@ -203,7 +240,31 @@ export default {
   }
 
   .markdown-body {
-    height: calc(100vh - 110px);
+    height: calc(100vh - 150px);
+  }
+
+  .blog-edit-tags {
+    margin-bottom: 10px;
+    width: 80vw;
+    text-align: right;
+
+    .el-tag + .el-tag {
+      margin-left: 10px;
+    }
+
+    .button-new-tag {
+      margin-left: 10px;
+      height: 32px;
+      line-height: 30px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .input-new-tag {
+      width: 90px;
+      margin-left: 10px;
+      vertical-align: bottom;
+    }
   }
 }
 </style>

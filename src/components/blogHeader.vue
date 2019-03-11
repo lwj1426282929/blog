@@ -98,7 +98,7 @@ export default {
   background: #fff;
 
   .blog-head-container {
-    width: 80%;
+    width: 80vw;
     margin: 0 auto;
   }
 
