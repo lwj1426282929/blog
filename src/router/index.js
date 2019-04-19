@@ -7,31 +7,32 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    redirect: '/blog'
+    redirect: '/home/blog'
   },
   {
-    path: '/blog',
+    path: '/home/blog',
     name: 'blogList',
     component: () => import('@/views/blogList')
   },
   {
-    path: '/blog/:id',
+    path: '/home/blog/:id',
     name: 'blogView',
     component: () => import('@/views/blogView')
   },
   {
-    path: '/blog/edit/markdown/:id',
+    path: '/home/blog/edit/markdown/:id',
     name: 'blogEditMarkdown',
     component: () => import('@/views/blogEdit/markdown')
   },
   {
-    path: '/blog/edit/quill/:id',
+    path: '/home/blog/edit/quill/:id',
     name: 'blogEditQuill',
     component: () => import('@/views/blogEdit/quill')
   }
 ]
 
 const router = new Router({
+  mode: 'history',
   routes
 })
 
