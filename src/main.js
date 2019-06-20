@@ -13,6 +13,27 @@ import 'muse-ui-message/dist/muse-ui-message.css'
 import theme from 'muse-ui/lib/theme'
 import 'element-ui/lib/theme-chalk/index.css'
 
+import { ApolloClient } from 'apollo-client'
+import { HttpLink } from 'apollo-link-http'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import VueApollo from 'vue-apollo'
+
+const httpLink = new HttpLink({
+  uri: 'http://localhost:3001/graphql'
+})
+
+const apolloClient = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache(),
+  connectToDevTools: true
+})
+
+const apolloProvider = new VueApollo({
+  defaultClient: apolloClient
+})
+
+Vue.use(VueApollo)
+
 theme.add('blog-theme', {
   primary: '#42c02e'
 }, 'light')
@@ -34,5 +55,6 @@ new Vue({
   components: {
     App
   },
+  provide: apolloProvider.provide(),
   template: '<App/>'
 })

@@ -1,12 +1,19 @@
 <template>
   <div class="blog-list">
+    <h1>{{ hello }}</h1>
     <mu-row>
       <mu-col span="9">
-        <div class="blog-container" v-for="(blog, index) in blogList" :key="index">
-          <router-link class="blog-title" :to="computeBlogRouter(blog.id)">{{ blog.title }}</router-link>
+        <div class="blog-container"
+             v-for="(blog, index) in blogList"
+             :key="index">
+          <router-link class="blog-title"
+                       :to="computeBlogRouter(blog.id)">{{ blog.title }}</router-link>
           <div class="blog-desc">{{ blog.desc }}</div>
           <div class="blog-tag">
-            <el-tag :key="index" v-for="(tag, index) in blog.tag" type="success" :class="'tag-' + tag.toLowerCase()">{{tag}}</el-tag>
+            <el-tag :key="index"
+                    v-for="(tag, index) in blog.tag"
+                    type="success"
+                    :class="'tag-' + tag.toLowerCase()">{{tag}}</el-tag>
           </div>
         </div>
       </mu-col>
@@ -20,6 +27,8 @@
 <script>
 import api from '@/service/api'
 import { Tag } from 'element-ui'
+import gql from 'graphql-tag'
+
 export default {
   name: 'BlogList',
 
@@ -33,18 +42,36 @@ export default {
     }
   },
 
+  apollo: {
+    // Apollo specific options
+    hello: gql`query {
+      hello
+    }`
+  },
+
   created () {
     this.getBolgList()
+    this.getGraphqlList()
   },
 
   methods: {
     // 获取列表
     async getBolgList () {
-      let res = await this.$http.get(api.blog.getList)
+      let res = await this.$http.get(api.blog.getList, { params: { key: '' } })
       this.blogList = res.data
       for (let item of this.blogList) {
         item.desc = this.delHtmlTag(item.content)
       }
+    },
+
+    async getGraphqlList () {
+      let result = await this.$apollo.mutate({
+        // Query
+        mutation: gql`query {
+          hello
+        }`
+      })
+      console.log(result)
     },
 
     // 取出HTML标签

@@ -11,8 +11,14 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "apollo-cache-inmemory": "^1.6.2",
+    "apollo-client": "^2.6.2",
+    "apollo-link": "^1.2.12",
+    "apollo-link-http": "^1.5.15",
     "axios": "^0.18.0",
     "element-ui": "^2.6.1",
+    "graphql": "^14.3.1",
+    "graphql-tag": "^2.10.1",
     "mavon-editor": "^2.6.17",
     "moment": "^2.24.0",
     "muse-ui": "^3.0.2",
@@ -21,6 +27,7 @@
     "muse-ui-progress": "^0.1.0",
     "typeface-roboto": "0.0.54",
     "vue": "^2.5.2",
+    "vue-apollo": "^3.0.0-beta.30",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.1",
     "vuex": "^3.1.0"
